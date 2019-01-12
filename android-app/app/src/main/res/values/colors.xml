@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="rallyGreen">#1EB980</color>
+    <color name="rallyDarkGreen">#045B56</color>
+    <color name="rallyOrange">#FF6859</color>
+    <color name="rallyYellow">#FFCF44</color>
+    <color name="rallyPurple">#B15DFF</color>
+    <color name="rallyBlue">#72DEFF</color>
+</resources>
