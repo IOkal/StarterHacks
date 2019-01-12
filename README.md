@@ -1,4 +1,4 @@
-# StarterHacks
+# Receipt Safe
 StarterHacks 2019 - Receipt Tracker
 
 Takes pictures of receipts, stores the picture in a database - need efficient and effective compression method to minimize database size
