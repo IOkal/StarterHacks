@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "386931525292",
+    "firebase_url": "https://receiptsafe-4a569.firebaseio.com",
+    "project_id": "receiptsafe-4a569",
+    "storage_bucket": "receiptsafe-4a569.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386931525292:android:c025dca76e4674ef",
+        "android_client_info": {
+          "package_name": "me.susieson.receiptsafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386931525292-8h574reeg79rq5lcjkb6vf3di1jdgm0o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.susieson.receiptsafe",
+            "certificate_hash": "72ac7a73eec0a0726bc74ee7980f0f1a12dec0a2"
+          }
+        },
+        {
+          "client_id": "386931525292-2abr62d27m9641v92bk8capdhv9fm5id.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSWLhdewVN1MvTzSwYZhB3G__O9nJ_itk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386931525292-2abr62d27m9641v92bk8capdhv9fm5id.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
