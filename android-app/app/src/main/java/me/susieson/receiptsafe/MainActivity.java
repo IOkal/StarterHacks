@@ -1,10 +1,12 @@
 package me.susieson.receiptsafe;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,18 +15,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.ml.vision.FirebaseVision;
+import com.google.firebase.ml.vision.common.FirebaseVisionImage;
+import com.google.firebase.ml.vision.text.FirebaseVisionText;
+import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
+
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements OverviewFragment.OnFragmentInteractionListener,
-        ReceiptsFragment.OnFragmentInteractionListener, AnalyticsFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements ReceiptsFragment.OnFragmentInteractionListener,
+        AnalyticsFragment.OnFragmentInteractionListener, OverviewFragment.OnFragmentInteractionListener {
 
-    static final int REQUEST_TAKE_PHOTO = 1;
     FragmentPagerAdapter mAdapterViewPager;
-    String mCurrentPhotoPath = "";
-    File mImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,70 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
         ViewPager viewPager = findViewById(R.id.view_pager);
         mAdapterViewPager = new TabPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mAdapterViewPager);
+    }
+
+    Uri fileUri;
+
+    @Override
+    public void dispatchTakePictureIntent() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                String.valueOf(System.currentTimeMillis()) + ".jpg");
+        fileUri = FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".me.susieson.receiptsafe.provider", file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        startActivityForResult(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == 1) {
+
+            if (resultCode == RESULT_OK) {
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), fileUri);
+                    processImage(bitmap);
+                } catch (IOException e) {
+
+                }
+            }
+        }
+    }
+
+    private void processImage(Bitmap bitmap) {
+        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
+        FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
+                .getOnDeviceTextRecognizer();
+        detector.processImage(image)
+                .addOnSuccessListener(new OnSuccessListener<FirebaseVisionText>() {
+                    @Override
+                    public void onSuccess(FirebaseVisionText firebaseVisionText) {
+                        //String resultText = firebaseVisionText.getText();
+                        for (FirebaseVisionText.TextBlock block : firebaseVisionText.getTextBlocks()) {
+                            //String blockText = block.getText();
+                            //Float blockConfidence = block.getConfidence();
+                            //List<RecognizedLanguage> blockLanguages = block.getRecognizedLanguages();
+                            //Point[] blockCornerPoints = block.getCornerPoints();
+                            //Rect blockFrame = block.getBoundingBox();
+                            for (FirebaseVisionText.Line line : block.getLines()) {
+                                //String lineText = line.getText();
+                                Log.d("MainActivity", line.getText());
+                                //Float lineConfidence = line.getConfidence();
+                                //List<RecognizedLanguage> lineLanguages = line.getRecognizedLanguages();
+                                //Point[] lineCornerPoints = line.getCornerPoints();
+                                //Rect lineFrame = line.getBoundingBox();
+                                //for (FirebaseVisionText.Element element: line.getElements()) {
+                                //    String elementText = element.getText();
+                                //    Float elementConfidence = element.getConfidence();
+                                //    List<RecognizedLanguage> elementLanguages = element.getRecognizedLanguages();
+                                //    Point[] elementCornerPoints = element.getCornerPoints();
+                                //   Rect elementFrame = element.getBoundingBox();
+                                //}
+                            }
+                        }
+                    }
+                });
     }
 
     public static class TabPagerAdapter extends FragmentPagerAdapter {
@@ -80,51 +147,6 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
             }
         }
 
-    }
-
-    @Override
-    public String dispatchTakePictureIntent() {
-        Log.d("MainActivity", "dispatchTakePictureIntent");
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "me.susieson.receiptsafe.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
-            }
-        }
-        if (mCurrentPhotoPath != null && !mCurrentPhotoPath.equals("")) {
-            return mImage.getAbsolutePath();
-        }
-        return "";
-    }
-
-    private File createImageFile() throws IOException {
-        Log.d("MainActivity", "createImageFile");
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        mImage = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = mImage.getAbsolutePath();
-        return mImage;
     }
 
 }
