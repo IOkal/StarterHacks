@@ -5,20 +5,33 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements OverviewFragment.OnFragmentInteractionListener,
         ReceiptsFragment.OnFragmentInteractionListener, AnalyticsFragment.OnFragmentInteractionListener {
+
+    // Access a Cloud Firestore instance from your Activity
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     static final int REQUEST_TAKE_PHOTO = 1;
     FragmentPagerAdapter mAdapterViewPager;
@@ -26,12 +39,34 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        ViewPager viewPager = findViewById(R.id.view_pager);
-        mAdapterViewPager = new TabPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(mAdapterViewPager);
+        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//
+//        ViewPager viewPager = findViewById(R.id.view_pager);
+//        mAdapterViewPager = new TabPagerAdapter(getSupportFragmentManager());
+//        viewPager.setAdapter(mAdapterViewPager);
+        Map<String, Object> user = new HashMap<>();
+        user.put("first", "Ada");
+        user.put("last", "Lovelace");
+        user.put("born", 1815);
+
+// Add a new document with a generated ID
+        final String TAG = "send it";
+        db.collection("users")
+                .add(user)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                    }
+                });
     }
 
     public static class TabPagerAdapter extends FragmentPagerAdapter {
