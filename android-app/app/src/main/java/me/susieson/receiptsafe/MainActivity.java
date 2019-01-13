@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,8 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
 
     static final int REQUEST_TAKE_PHOTO = 1;
     FragmentPagerAdapter mAdapterViewPager;
-    String mCurrentPhotoPath;
+    String mCurrentPhotoPath = "";
+    File mImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
     }
 
     @Override
-    public void dispatchTakePictureIntent() {
+    public String dispatchTakePictureIntent() {
+        Log.d("MainActivity", "dispatchTakePictureIntent");
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -101,21 +104,27 @@ public class MainActivity extends AppCompatActivity implements OverviewFragment.
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
             }
         }
+        if (mCurrentPhotoPath != null && !mCurrentPhotoPath.equals("")) {
+            return mImage.getAbsolutePath();
+        }
+        return "";
     }
 
     private File createImageFile() throws IOException {
+        Log.d("MainActivity", "createImageFile");
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+        mImage = File.createTempFile(
                 imageFileName,
                 ".jpg",
                 storageDir
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
+        mCurrentPhotoPath = mImage.getAbsolutePath();
+        return mImage;
     }
+
 }
