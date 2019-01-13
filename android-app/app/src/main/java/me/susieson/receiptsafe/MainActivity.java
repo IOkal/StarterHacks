@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -21,6 +22,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage;
 import com.google.firebase.ml.vision.text.FirebaseVisionText;
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -59,8 +61,20 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
 
             if (resultCode == RESULT_OK) {
                 try {
+                    //Encode the image as a Byte64 array for sending to https://vision.infrrdapis.com/ocr/v2/receipt API
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), fileUri);
-                    processImage(bitmap);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] byteImage = baos.toByteArray();
+                    String encodedImage = Base64.encodeToString(byteImage, Base64.DEFAULT);
+
+                    Log.d("MainActivity", "encodedImage " + encodedImage);
+
+                    //Not working effectively atm
+                    //processImage(bitmap);
+                    sendImageData(encodedImage);
+
+
                 } catch (IOException e) {
 
                 }
@@ -68,6 +82,24 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
         }
     }
 
+    private boolean sendImageData(String encodedImage) {
+        try{
+            //Create POST request to https://vision.infrrdapis.com/ocr/v2/receipt
+
+        }
+        catch(Exception ex){
+            Log.e("MainActivity", "Failed to send POST request.");
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+
+
+/*
     private void processImage(Bitmap bitmap) {
         FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
         FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
@@ -102,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
                     }
                 });
     }
+    */
 
     public static class TabPagerAdapter extends FragmentPagerAdapter {
         private static int NUM_ITEMS = 4;
