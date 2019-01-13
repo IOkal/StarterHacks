@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="General Settings">
+        <Preference android:title="Select Categories To Track" />
+        <Preference android:title="Clear Receipt History" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Account Settings">
+        <Preference android:title="Manage Accounts" />
+        <Preference android:title="Log Out" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="About">
+        <Preference android:title="About" />
+        <Preference android:title="Rate This App" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

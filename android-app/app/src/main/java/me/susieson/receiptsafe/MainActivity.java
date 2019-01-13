@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
                 try {
                     Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), fileUri);
                     processImage(bitmap);
+                    update();
                 } catch (IOException e) {
 
                 }
