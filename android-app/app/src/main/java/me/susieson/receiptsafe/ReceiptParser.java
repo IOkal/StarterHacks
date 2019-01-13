@@ -15,7 +15,7 @@ public class ReceiptParser {
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("https://vision.infrrdapis.com")
+                .baseUrl("https://api.taggun.io")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

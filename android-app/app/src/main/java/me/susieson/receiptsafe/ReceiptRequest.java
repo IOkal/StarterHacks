@@ -1,68 +1,39 @@
 package me.susieson.receiptsafe;
 
 public class ReceiptRequest {
-    private String[] additionalFields;
-    private boolean getLines;
-    private boolean text;
-    private boolean enableMerchantEnrichment;
-    private boolean isEnableMerchantLookup;
-    private String fileContent;
+    private String image;
+    private String filename;
+    private String contentType;
 
     public ReceiptRequest(String file) {
-        this.additionalFields = new String[]{"merchantname", "totalbillamount", "billingdate", "category"};
-        this.getLines = true;
-        this.text = false;
-        this.enableMerchantEnrichment = false;
-        this.isEnableMerchantLookup = false;
-        this.fileContent = file;
+        this.filename = "image/jpeg";
+        this.image = file;
+        this.filename = "example.jpg";
     }
 
-    public String[] getAdditionalFields() {
-        return additionalFields;
+    public String getImage() {
+        return image;
     }
 
-    public boolean isGetLines() {
-        return getLines;
+    public void setImage(String image) {
+        this.image = image;
     }
 
-    public boolean isText() {
-        return text;
+    public String getFilename() {
+        return filename;
     }
 
-    public boolean isEnableMerchantEnrichment() {
-        return enableMerchantEnrichment;
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
-    public boolean isEnableMerchantLookup() {
-        return isEnableMerchantLookup;
+    public String getContentType() {
+        return contentType;
     }
 
-    public String getFileContent() {
-        return fileContent;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
-
-    public void setAdditionalFields(String[] additionalFields) {
-        this.additionalFields = additionalFields;
-    }
-
-    public void setGetLines(boolean getLines) {
-        this.getLines = getLines;
-    }
-
-    public void setText(boolean text) {
-        this.text = text;
-    }
-
-    public void setEnableMerchantEnrichment(boolean enableMerchantEnrichment) {
-        this.enableMerchantEnrichment = enableMerchantEnrichment;
-    }
-
-    public void setEnableMerchantLookup(boolean enableMerchantLookup) {
-        isEnableMerchantLookup = enableMerchantLookup;
-    }
-
-    public void setFileContent(String fileContent) {
-        this.fileContent = fileContent;
-    }
-
 }
+
+
