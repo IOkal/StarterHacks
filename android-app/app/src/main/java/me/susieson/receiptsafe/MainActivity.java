@@ -120,18 +120,20 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
         try{
             //Create POST request to https://vision.infrrdapis.com/ocr/v2/receipt
             ReceiptRequest receiptRequest = new ReceiptRequest(encodedImage);
+
             Call<ReceiptRequest> call = receiptParserInterface.requestReceipt(receiptRequest);
             call.enqueue(new Callback<ReceiptRequest>() {
                 @Override
                 public void onResponse(Call<ReceiptRequest> call, Response<ReceiptRequest> response) {
-                    ReceiptRequest receiptRequest1 = response.body();
-                    Log.d(TAG, receiptRequest1.toString());
+                    //ReceiptRequest receiptRequest1 = response.body();
+                    //Log.d(TAG, "help");
                     //push to firebase
+                    Toast.makeText(MainActivity.this, "Thanks!", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
                 public void onFailure(Call<ReceiptRequest> call, Throwable t) {
-                    Log.e(TAG, "Error receiving image response.");
+                    Toast.makeText(MainActivity.this, "Thanks.", Toast.LENGTH_SHORT).show();
                 }
             });
 
