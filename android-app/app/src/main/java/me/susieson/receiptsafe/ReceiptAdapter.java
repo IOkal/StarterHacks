@@ -1,12 +1,16 @@
 package me.susieson.receiptsafe;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -29,7 +33,7 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
         Receipt receipt = mReceipts.get(i);
         if (receipt.getTotalAmount() < 50) {
             viewHolder.ind.setBackgroundColor(mContext.getResources().getColor(R.color.rallyGreen));
@@ -40,6 +44,14 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         }
         viewHolder.name.setText(TextUtils.titleFormat(receipt.getMerchantName()));
         viewHolder.cat.setText(TextUtils.titleFormat(receipt.getCategory()));
+        viewHolder.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, ReceiptActivity.class);
+                intent.putExtra("receipt-extra", Parcels.wrap(mReceipts.get(i)));
+                mContext.startActivity(intent);
+            }
+        });
         viewHolder.total.setText(String.format("$%.2f", receipt.getTotalAmount()));
     }
 
@@ -54,9 +66,11 @@ public class ReceiptAdapter extends RecyclerView.Adapter<ReceiptAdapter.ViewHold
         TextView name;
         TextView cat;
         TextView total;
+        ImageView button;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            button = itemView.findViewById(R.id.receipt_arrow);
             ind = itemView.findViewById(R.id.spending_indicator);
             name = itemView.findViewById(R.id.receipt_name);
             cat = itemView.findViewById(R.id.receipt_category);
