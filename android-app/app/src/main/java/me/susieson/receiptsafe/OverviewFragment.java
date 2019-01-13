@@ -1,8 +1,6 @@
 package me.susieson.receiptsafe;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -12,17 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.ml.vision.FirebaseVision;
-import com.google.firebase.ml.vision.common.FirebaseVisionImage;
-import com.google.firebase.ml.vision.text.FirebaseVisionText;
-import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer;
-
 public class OverviewFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
     private FloatingActionButton mNewReceiptButton;
-    private String mFilePath;
+    private OnFragmentInteractionListener mListener;
 
     public OverviewFragment() {
     }
@@ -74,21 +65,12 @@ public class OverviewFragment extends Fragment {
 
     private void takePicture() {
         Log.d("OverviewFragment", "takePicture");
-        mFilePath = mListener.dispatchTakePictureIntent();
-    }
-
-    private void processImage() {
-        Log.d("OverviewFragment", "processImage");
-        Bitmap bitmap = BitmapFactory.decodeFile(mFilePath);
-        FirebaseVisionImage image = FirebaseVisionImage.fromBitmap(bitmap);
-        FirebaseVisionTextRecognizer detector = FirebaseVision.getInstance()
-                .getOnDeviceTextRecognizer();
-        Task<FirebaseVisionText> task = detector.processImage(image);
+        mListener.dispatchTakePictureIntent();
     }
 
     public interface OnFragmentInteractionListener {
 
-        String dispatchTakePictureIntent();
+        void dispatchTakePictureIntent();
 
     }
 
