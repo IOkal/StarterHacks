@@ -30,9 +30,10 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity implements ReceiptsFragment.OnFragmentInteractionListener,
         AnalyticsFragment.OnFragmentInteractionListener, OverviewFragment.OnFragmentInteractionListener {
-
+    private static final String TAG = MainActivity.class.getSimpleName();
     private FragmentPagerAdapter mAdapterViewPager;
     private FirebaseInterface mFirebaseInterface;
+    private ReceiptParserInterface receiptParserInterface;
     private ViewPager mViewPager;
     private User mUser;
     private Uri fileUri;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
         mViewPager = findViewById(R.id.view_pager);
 
         mFirebaseInterface = FirebaseClient.getClient().create(FirebaseInterface.class);
+        receiptParserInterface = ReceiptParser.getClient().create(ReceiptParserInterface.class);
+
 
         Call<User> userCall = mFirebaseInterface.getAllInfo();
         userCall.enqueue(new Callback<User>() {
@@ -116,13 +119,29 @@ public class MainActivity extends AppCompatActivity implements ReceiptsFragment.
     private boolean sendImageData(String encodedImage) {
         try{
             //Create POST request to https://vision.infrrdapis.com/ocr/v2/receipt
+            ReceiptRequest receiptRequest = new ReceiptRequest(encodedImage);
+            Call<ReceiptRequest> call = receiptParserInterface.requestReceipt(receiptRequest);
+            call.enqueue(new Callback<ReceiptRequest>() {
+                @Override
+                public void onResponse(Call<ReceiptRequest> call, Response<ReceiptRequest> response) {
+                    ReceiptRequest receiptRequest1 = response.body();
+                    Log.d(TAG, receiptRequest1.toString());
+                    //push to firebase
+                }
 
+                @Override
+                public void onFailure(Call<ReceiptRequest> call, Throwable t) {
+                    Log.e(TAG, "Error receiving image response.");
+                }
+            });
+
+            Toast.makeText(MainActivity.this, "Success!", Toast.LENGTH_SHORT).show();
         }
         catch(Exception ex){
             Log.e("MainActivity", "Failed to send POST request.");
+            Toast.makeText(MainActivity.this, "An error occurred while trying to process your receipt. Please try again.", Toast.LENGTH_SHORT).show();
             return false;
         }
-
 
         return true;
     }
